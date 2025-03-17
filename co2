@@ -1,0 +1,195 @@
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO₂ Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+    
+        <h1>CO₂ CALCULATOR</h1>
+        <nav>
+            <a href="#">Profile</a>
+            <a href="#">Home</a>
+            <a href="#">Contact Us</a>
+            <a href="#">LogOut</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="left">
+            <h2>RESULTS</h2>
+            <input type="text" id="result" readonly>
+            
+            <h2>LIMITS</h2>
+            <div class="limits">
+                <p>⚡ Electricity Usage: <b>116.25 kWh/Month</b></p>
+                <p>🚗 Car Mileage: <b>30-40 km/day</b></p>
+                <p>⛽ Fuel Efficiency: <b>16.1 KMPL</b></p>
+                <p>🔋 LPG Cylinders: <b>6 Cylinders / Year</b></p>
+                <p>🗑 Waste Produced: <b>15 to 35 kg per week</b></p>
+            </div>
+        </div>
+
+        <div class="right">
+            <h2>GRAPH</h2>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h2>Enter Your Data</h2>
+        <input type="number" id="electricity" placeholder="Electricity Usage (kWh)">
+        <input type="number" id="mileage" placeholder="Car Mileage (km/day)">
+        <input type="number" id="fuel" placeholder="Fuel Efficiency (KMPL)">
+        <input type="number" id="lpg" placeholder="LPG Cylinders (Year)">
+        <input type="number" id="waste" placeholder="Waste Produced (kg/week)">
+        <button onclick="calculate()">Calculate</button>
+        <p id="message"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+styles.css
+body {
+    background: url('leaf-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(0, 100, 0, 0.8);
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+    padding: 20px;
+    background: rgba(0, 128, 0, 0.7);
+    border-radius: 10px;
+}
+
+.left, .right {
+    width: 45%;
+}
+
+.limits {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+canvas {
+    width: 300px;
+    height: 300px;
+}
+
+.form-container {
+    margin-top: 20px;
+}
+
+input, button {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    width: 80%;
+}
+
+button {
+    background: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+scripts.js
+function calculate() {
+    let electricity = parseFloat(document.getElementById("electricity").value);
+    let mileage = parseFloat(document.getElementById("mileage").value);
+    let fuel = parseFloat(document.getElementById("fuel").value);
+    let lpg = parseFloat(document.getElementById("lpg").value);
+    let waste = parseFloat(document.getElementById("waste").value);
+
+    let limits = {
+        electricity: 116.25,
+        mileage: 40,
+        fuel: 16.1,
+        lpg: 6,
+        waste: 35
+    };
+
+    let message = "Everything is within limits! You are eco-friendly.";
+    let exceed = false;
+
+    if (electricity > limits.electricity) {
+        message = "⚠ Electricity usage is too high! Reduce by using energy-efficient appliances.";
+        exceed = true;
+    }
+    if (mileage > limits.mileage) {
+        message = "⚠ Car mileage is high! Use public transport or carpool.";
+        exceed = true;
+    }
+    if (fuel < limits.fuel) {
+        message = "⚠ Fuel efficiency is low! Maintain your vehicle properly.";
+        exceed = true;
+    }
+    if (lpg > limits.lpg) {
+        message = "⚠ Too many LPG cylinders used! Optimize your cooking practices.";
+        exceed = true;
+    }
+    if (waste > limits.waste) {
+        message = "⚠ Waste production is high! Reduce, reuse, recycle.";
+        exceed = true;
+    }
+
+    document.getElementById("message").innerText = message;
+    
+    let total = limits.electricity + limits.mileage + limits.fuel + limits.lpg + limits.waste;
+    let userTotal = electricity + mileage + fuel + lpg + waste;
+    
+    let data = [
+        (electricity / total) * 100,
+        (mileage / total) * 100,
+        (fuel / total) * 100,
+        (lpg / total) * 100,
+        (waste / total) * 100
+    ];
+
+    let ctx = document.getElementById('pieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Electricity', 'Mileage', 'Fuel', 'LPG', 'Waste'],
+            datasets: [{
+                data: data,
+                backgroundColor: ['red', 'blue', 'green', 'yellow', 'orange']
+            }]
+        }
+    });
+}
+
